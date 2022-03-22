@@ -1,59 +1,73 @@
 import * as d3 from 'd3';
 import { json } from 'd3-fetch'
 
-// Charger des données
+
+let arrayUserPost = []
+
 Promise.all([
     json('https://jsonplaceholder.typicode.com/users'),
     json('https://jsonplaceholder.typicode.com/posts')
 ])
 
-    // Créer des tableaux d'objets
-    .then(([tabUsers, tabPosts]) => {
+    .then(([users, posts]) => {
+        console.log(users);
+        console.log(posts);
 
-        let postsByUsers = []
-        // Calculer le nombre de posts par user
-        tabUsers.forEach(user => {
-            let cmptPost = 0;
+        // Création tableau utilisateurs avec leurs posts
+        for (let i = 0; i < users.length; i++) {
+            let arrayCurrentUser = {};
 
-            tabPosts.forEach(post => {
+            arrayCurrentUser["nom_utilisateur"] = users[i].username;
+            arrayCurrentUser["ville"] = users[i].address.city;
+            arrayCurrentUser["nom_companie"] = users[i].company.name;
+
+            let userPosts = [];
+            posts.forEach(post => {
+                if (post.userId == users[i].id) {
+                    userPosts.push(post.title)
+                }
+            });
+
+            arrayCurrentUser["posts"] = userPosts;
+
+            arrayUserPost.push(arrayCurrentUser);
+        }
+
+
+        // Calculer le nombre de posts par utilisateur
+        users.forEach(user => {
+            let cpt = 0
+
+            posts.forEach(post => {
                 if (post.userId == user.id) {
-                    cmptPost++;
-                    postsByUsers.push({
-                        nom: user.name,
-                        idPost: post.id,
-                        longueurPost: post.body.length,
-                        post: post.body
-                    })
+                    cpt++;
                 }
             })
 
-            // Afficher les données
             d3.select("body")
                 .append("div")
                 .attr('id', `div-user${user.id}`)
 
             d3.select(`#div-user${user.id}`)
                 .append('p')
-                .text(`--> ${user.name} a écrit ${cmptPost} article(s).`)
+                .text(`${user.name} a écrit ${cpt} article(s).`)
+        });
 
-        })
-
-        // Déterminer le post le plus long
+        // User avec le plus long post
         d3.select("body")
             .append("div")
             .append('p')
 
         let longestPost = ''
         let longestPostId = 0
-
-        tabPosts.forEach(post => {
+        posts.forEach(post => {
             if (longestPost.length < post.body.length) {
                 longestPost = post.body
                 longestPostId = post.userId
             }
         })
 
-        let userLongestPost = tabUsers[longestPostId - 1].name
+        let userLongestPost = users[longestPostId - 1].name
 
         d3.select("body")
             .append("div")
@@ -65,16 +79,14 @@ Promise.all([
             .text(`Le voici : ${longestPost}`)
 
 
-
         // Graphique bâton
-        var margin = { top: 20, right: 10, bottom: 60, left: 60 };
-        var width = 1500 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        let margin = { top: 25, right: 25, bottom: 25, left: 25 };
+        let width = 1000 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
 
         d3.select("body")
             .append("div")
             .attr('id', 'graph')
-
         let svg = d3.select("#graph")
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -82,13 +94,17 @@ Promise.all([
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
+
         let x = d3.scaleBand()
-            .domain(arrayUserPost.map(function (d) { return d["nom_utilisateur"]; }))
+            .domain(arrayUserPost.map(function (d) {
+                return d["nom_utilisateur"];
+            }))
             .range([1000, 0]);
 
-
         let y = d3.scaleLinear()
-            .domain(arrayUserPost.map(function (d) { return d["posts"].length; }))
+            .domain(arrayUserPost.map(function (d) {
+                return d["posts"].length; 
+            }))
             .range([height, 0]);
 
 
@@ -99,15 +115,20 @@ Promise.all([
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x))
             .selectAll("text")
-            .attr("transform", "translate(-2,10)")
 
         svg.selectAll("bars")
             .data(arrayUserPost)
             .enter()
             .append("rect")
-            .attr("x", function (d) { return x(d["nom_utilisateur"]) + 40; })
-            .attr("y", function (d) { return y(d["posts"].length); })
-            .attr("width", "20px")
-            .attr("height", function (d) { return height - y(d["posts"].length); })
-            .attr("fill", "#69b3a2")
-    })
+            .attr("x", function (d) {
+                return x(d["nom_utilisateur"]) + 25;
+            })
+            .attr("y", function (d) {
+                return y(d["posts"].length);
+            })
+            .attr("width", "50px")
+            .attr("height", function (d) {
+                return height - y(d["posts"].length);
+            })
+            .attr("fill", "pink")
+    });
