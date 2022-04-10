@@ -48,7 +48,7 @@ let projection = d3.geoMercator()
 // Data and color scale
 let data = new Map();
 let colorScale = d3.scaleThreshold()
-    .domain([50, 60, 70, 80, 90, 100])
+    .domain([50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100])
     .range(d3.schemeReds[7]);
 
 d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(function (d) {
@@ -58,7 +58,6 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
         .selectAll("path")
         .data(d.features)
         .join("path")
-
         // draw each country
         .attr("d", d3.geoPath()
             .projection(projection)
@@ -66,6 +65,8 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
 
         // set id
         .attr("id", function (d) { return d.properties.name; })
+
+        // set the color of each country
         .attr("fill", function (d) {
             let number = 0;
 
@@ -77,4 +78,36 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
 
             return colorScale(number);
         })
+
+        .style("stroke", "transparent")
+        .attr("class", function (d) { return "country" })
+        .style("opacity", .8)
+        .on("mouseover", mouseOver)
+        .on("mouseleave", mouseLeave)
+
 })
+
+let mouseOver = function (d) {
+    d3.selectAll(".country")
+        .transition()
+        .duration(200)
+        .style("opacity", .4)
+
+    d3.select(this)
+        .transition()
+        .duration(200)
+        .style("opacity", 1)
+        .style("stroke", "white")
+}
+
+let mouseLeave = function (d) {
+    d3.selectAll(".country")
+        .transition()
+        .duration(200)
+        .style("opacity", .8)
+        
+    d3.select(this)
+        .transition()
+        .duration(200)
+        .style("stroke", "transparent")
+}
