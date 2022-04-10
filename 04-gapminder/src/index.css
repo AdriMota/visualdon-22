@@ -7,12 +7,18 @@ body {
     height: 100vh;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    
 }
 
-#graph {
+#graph, #map {
     width: 90vw;
-    height: 90vh;
+    height: 80vh;
+    margin: auto;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: rgba(255, 0, 0, 0.4);
+    text-align: center;
+    margin-top: 5%;
 }
