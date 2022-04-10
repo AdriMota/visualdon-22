@@ -41,7 +41,7 @@ const svg = d3.select("#map")
 // Map and projection
 let path = d3.geoPath();
 let projection = d3.geoMercator()
-    .scale(70)
+    .scale(150)
     .center([0, 20])
     .translate([width / 2, height / 2]);
 
