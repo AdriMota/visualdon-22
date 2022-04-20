@@ -10,7 +10,7 @@ body {
     
 }
 
-#graph, #map {
+#graph, #map, #graphAnimate {
     width: 90vw;
     height: 80vh;
     margin: auto;
@@ -21,4 +21,10 @@ body {
 h1 {
     color: rgba(255, 0, 0, 0.4);
     text-align: center;
+}
+
+h2 {
+    color: rgba(0, 0, 0, 0.4);
+    text-align: center;
+    font-size: larger;
 }
